@@ -11,7 +11,8 @@ class App extends Component {
           <h2>たひリモコン</h2>
         </div>
         <p className="App-intro">
-          ああ＾〜
+          ああ＾〜<br />
+          動くんじゃぁ＾〜
         </p>
       </div>
     );
