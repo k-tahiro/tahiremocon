@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import logo from './logo.svg';
 import './App.css';
+import ButtonList from './ButtonList';
 
 class App extends Component {
   render() {
@@ -10,10 +12,9 @@ class App extends Component {
           <img src={logo} className="App-logo" alt="logo" />
           <h2>たひリモコン</h2>
         </div>
-        <p className="App-intro">
-          ああ＾〜<br />
-          動くんじゃぁ＾〜
-        </p>
+        <MuiThemeProvider>
+          <ButtonList />
+        </MuiThemeProvider>
       </div>
     );
   }
