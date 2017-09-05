@@ -1,8 +1,10 @@
 import React from 'react';
-import RaisedButton from 'material-ui/RaisedButton';
+import Button from './Button';
 
 const ButtonList = () => (
-  <RaisedButton label="Default" />
+  <Button 
+    label="Default"
+  />
 );
 
 export default ButtonList;

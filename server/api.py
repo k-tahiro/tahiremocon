@@ -26,7 +26,7 @@ class BtoIrCmd(Resource):
     赤外線リモコン操作APIクラス
     """
 
-    def post(self, cmd_name: str):
+    def get(self, cmd_name: str):
         return_code = BtoIrCmd._exec_cmd(cmd_name)
         if return_code == 0:
             is_success = True
