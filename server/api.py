@@ -48,7 +48,7 @@ class BtoIrCmd(Resource):
     def _exec_cmd(cmd_name: str) -> int:
         cmd = CMD_DEF.get(cmd_name)
         if cmd:
-            return os.system('{CMD_FILE} -e -t {cmd}'.format(CMD_FILE, cmd))
+            return os.system('{} -e -t {}'.format(CMD_FILE, cmd))
         else:
             return 99
 
