@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import logo from './logo.svg';
 import './App.css';
-import ButtonList from './ButtonList';
+import AppBody from './AppBody';
 
 class App extends Component {
   render() {
@@ -13,7 +13,7 @@ class App extends Component {
           <h2>たひリモコン</h2>
         </div>
         <MuiThemeProvider>
-          <ButtonList />
+          <AppBody />
         </MuiThemeProvider>
       </div>
     );

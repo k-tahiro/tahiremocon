@@ -1,50 +1,32 @@
 import React, { Component } from 'react';
+import loadCmd from './loadCmd'
 import Button from './Button';
-import request2Api from './request2Api'
 
 class ButtonList extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      success: undefined,
-      label: undefined
+      list: []
     }
-    this.handleClick = this.handleClick.bind(this)
-  }
-
-  handleClick(label) {
-    let success = undefined;
-    try {
-      request2Api(label);
-      success = true;
-    }
-    catch(e) {
-      success = false;
-    }
-    this.setState({
-      success,
-      label
-    });
+    loadCmd().then(list => this.setState({list: list}))
   }
 
   render() {
     return (
-      <div>
+      <div className="ButtonList">
         {
           (() => {
-            if (this.state.success === undefined) {
-              return <div className="Status"></div>
-            } else if (this.state.success === true) {
-              return <div className="Status">{this.state.label}成功</div>
-            } else {
-              return <div className="Status">{this.state.label}失敗</div>
+            if (this.state.list.length) {
+              return this.state.list.map(
+                cmd => <Button
+                           key={cmd}
+                           label={cmd}
+                           handleClick={this.props.handleClick}
+                       />
+              );
             }
           })()
         }
-        <Button
-          label="Default"
-          handleClick={this.handleClick}
-        />
       </div>
     )
   }

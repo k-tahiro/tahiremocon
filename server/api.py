@@ -21,6 +21,15 @@ with open(CMD_DEF_FILE) as f:
     }
 
 
+class BtoIrCmdAdmin(Resource):
+    """
+    赤外線リモコン操作API管理APIクラス
+    """
+
+    def get(self):
+        return list(CMD_DEF.keys())
+
+
 class BtoIrCmd(Resource):
     """
     赤外線リモコン操作APIクラス
@@ -46,12 +55,13 @@ class BtoIrCmd(Resource):
 
 app = Flask(__name__)
 api = Api(app)
+api.add_resource(BtoIrCmdAdmin, '/bto_ir_cmd')
 api.add_resource(BtoIrCmd, '/bto_ir_cmd/<string:cmd_name>')
 
 
 @begin.start
-def main(debug=False):
+def main(host='0.0.0.0', debug=False):
     """
     main method
     """
-    app.run(debug=debug)
+    app.run(host=host, debug=debug)
