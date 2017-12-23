@@ -6,9 +6,8 @@ class ButtonList extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      list: []
+      list: loadCmd()
     }
-    loadCmd().then(list => this.setState({list: list}))
   }
 
   render() {
