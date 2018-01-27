@@ -6,6 +6,7 @@ BTO IR Server Api with Flask-RESTful
 
 import csv
 import os
+import commands
 
 from flask import Flask
 from flask_restful import Resource, Api
@@ -13,27 +14,34 @@ import begin
 
 CMD_FILE = '/usr/local/bin/bto_ir_cmd'
 CMD_DEF_FILE = '/etc/bto_ir_cmd.csv'
-with open(CMD_DEF_FILE) as f:
-    reader = csv.reader(f)
-    CMD_DEF = {
-        row[0]: row[1]
-        for row in reader
-    }
 
 
 class BtoIrCmdAdmin(Resource):
     """
-    赤外線リモコン操作API管理APIクラス
+    赤外線リモコン操作API管理クラス
     """
 
     def get(self):
-        return list(CMD_DEF.keys())
+        return list(BtoIrCmdAdmin.get_commands.keys())
+
+    @staticmethod
+    def get_commands():
+        with open(CMD_DEF_FILE) as f:
+            reader = csv.reader(f)
+            return {
+                row[0]: row[1]
+                for row in reader
+            }
 
 
 class BtoIrCmd(Resource):
     """
     赤外線リモコン操作APIクラス
     """
+
+    def __init__(**kwargs):
+        # smart_engine is a black box dependency
+        self.commands = BtoIrCmdAdmin.get_commands()
 
     def get(self, cmd_name: str):
         return_code = BtoIrCmd._exec_cmd(cmd_name)
@@ -44,13 +52,25 @@ class BtoIrCmd(Resource):
 
         return {'success': is_success}
 
-    @staticmethod
-    def _exec_cmd(cmd_name: str) -> int:
-        cmd = CMD_DEF.get(cmd_name)
+    def _exec_cmd(self, cmd_name: str) -> int:
+        cmd = self.commands.get(cmd_name)
         if cmd:
             return os.system('{} -e -t {}'.format(CMD_FILE, cmd))
         else:
             return 99
+
+    def post(self, cmd_name: str):
+        output = commands.getoutput('{} -e -r'.format(CMD_FILE))
+        _, _, result = output.strip().split()
+        _, _, cmd = result.strip().split()
+        BtoIrCmd._append_cmd(cmd_name, cmd)
+        return {'success': True}
+
+    @staticmethod
+    def _append_cmd(cmd_name: str, cmd: str):
+        with open(CMD_DEF_FILE, 'a') as f:
+            writer = csv.writer(f)
+            writer.writerow([cmd_name, cmd])
 
 
 app = Flask(__name__)
