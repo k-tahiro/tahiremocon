@@ -5,9 +5,10 @@ import Button from './Button';
 class ButtonList extends Component {
   constructor(props) {
     super(props)
-    this.state = {
-      list: loadCmd()
-    }
+    this.state = {}
+    loadCmd().then(json => {
+      this.setState({list: json})
+    })
   }
 
   render() {
@@ -15,7 +16,7 @@ class ButtonList extends Component {
       <div className="ButtonList">
         {
           (() => {
-            if (this.state.list.length) {
+            if ('list' in this.state && this.state.list.length) {
               return this.state.list.map(
                 cmd => <Button
                            key={cmd}
