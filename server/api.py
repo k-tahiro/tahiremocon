@@ -22,7 +22,7 @@ class BtoIrCmdAdmin(Resource):
     """
 
     def get(self):
-        return list(BtoIrCmdAdmin.get_commands.keys())
+        return list(BtoIrCmdAdmin.get_commands().keys())
 
     @staticmethod
     def get_commands():
