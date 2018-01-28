@@ -16,16 +16,7 @@ CMD_FILE = '/usr/local/bin/bto_ir_cmd'
 CMD_DEF_FILE = '/etc/bto_ir_cmd.csv'
 
 
-class BtoIrCmdAdmin(Resource):
-    """
-    赤外線リモコン操作API管理クラス
-    """
-
-    def get(self):
-        return list(BtoIrCmdAdmin.get_commands().keys())
-
-    @staticmethod
-    def get_commands():
+def get_commands():
         with open(CMD_DEF_FILE) as f:
             reader = csv.reader(f)
             return {
@@ -34,14 +25,19 @@ class BtoIrCmdAdmin(Resource):
             }
 
 
+class BtoIrCmdAdmin(Resource):
+    """
+    赤外線リモコン操作API管理クラス
+    """
+
+    def get(self):
+        return list(get_commands().keys())    
+
+
 class BtoIrCmd(Resource):
     """
     赤外線リモコン操作APIクラス
     """
-
-    def __init__(**kwargs):
-        # smart_engine is a black box dependency
-        self.commands = BtoIrCmdAdmin.get_commands()
 
     def get(self, cmd_name: str):
         return_code = BtoIrCmd._exec_cmd(cmd_name)
@@ -53,7 +49,7 @@ class BtoIrCmd(Resource):
         return {'success': is_success}
 
     def _exec_cmd(self, cmd_name: str) -> int:
-        cmd = self.commands.get(cmd_name)
+        cmd = get_commands.get(cmd_name)
         if cmd:
             return os.system('{} -e -t {}'.format(CMD_FILE, cmd))
         else:
