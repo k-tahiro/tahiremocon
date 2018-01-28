@@ -6,7 +6,7 @@ BTO IR Server Api with Flask-RESTful
 
 import csv
 import os
-import commands
+import subprocess
 
 from flask import Flask
 from flask_restful import Resource, Api
@@ -60,9 +60,13 @@ class BtoIrCmd(Resource):
             return 99
 
     def post(self, cmd_name: str):
-        output = commands.getoutput('{} -e -r'.format(CMD_FILE))
-        _, _, result = output.strip().split()
-        _, _, cmd = result.strip().split()
+        try:
+            cp = subprocess.run([CMD_FILE, '-e', '-r'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        except subprocess.SubprocessError:
+            return {'success': False}
+
+        _, _, result = cp.stdout.split()
+        cmd = result.strip().split()
         BtoIrCmd._append_cmd(cmd_name, cmd)
         return {'success': True}
 
