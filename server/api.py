@@ -10,19 +10,27 @@ import subprocess
 
 from flask import Flask
 from flask_restful import Resource, Api
+from flask_sqlalchemy import SQLAlchemy
 import begin
 
-CMD_FILE = '/usr/local/bin/bto_ir_cmd'
-CMD_DEF_FILE = '/etc/bto_ir_cmd.csv'
+DB_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'command.db')
+
+app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{DB_FILE}'
+db = SQLAlchemy(app)
 
 
-def get_commands():
-        with open(CMD_DEF_FILE) as f:
-            reader = csv.reader(f)
-            return {
-                row[0]: row[1]
-                for row in reader
-            }
+class Command(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(70), unique=True)
+    signal = db.Column(db.String(70), unique=True)
+
+    def __init__(self, name, signal):
+        self.name = name
+        self.signal = signal
+
+    def __repr__(self):
+        return '<Command %r>' % self.name
 
 
 class BtoIrCmdAdmin(Resource):
@@ -31,7 +39,7 @@ class BtoIrCmdAdmin(Resource):
     """
 
     def get(self):
-        return list(get_commands().keys())    
+        return [command.name for command in Command.query.all()]
 
 
 class BtoIrCmd(Resource):
@@ -50,7 +58,7 @@ class BtoIrCmd(Resource):
 
     @staticmethod
     def _exec_cmd(cmd_name: str) -> int:
-        cmd = get_commands().get(cmd_name)
+        cmd = Command.query.filter_by(name=cmd_name).first()
         if cmd:
             return os.system('{} -e -t {}'.format(CMD_FILE, cmd))
         else:
@@ -69,12 +77,10 @@ class BtoIrCmd(Resource):
 
     @staticmethod
     def _append_cmd(cmd_name: str, cmd: str):
-        with open(CMD_DEF_FILE, 'a') as f:
-            writer = csv.writer(f)
-            writer.writerow([cmd_name, cmd])
+        db.session.add(Command(cmd_name, cmd))
+        db.session.commit()
 
 
-app = Flask(__name__)
 api = Api(app)
 api.add_resource(BtoIrCmdAdmin, '/bto_ir_cmd')
 api.add_resource(BtoIrCmd, '/bto_ir_cmd/<string:cmd_name>')

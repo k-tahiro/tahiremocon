@@ -1,3 +1,4 @@
 begins
 flask
 flask-restful
+flask-sqlalchemy
