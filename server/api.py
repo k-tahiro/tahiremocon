@@ -56,16 +56,20 @@ class BtoIrCmdTransmitter(Resource):
 
     def post(self):
         args = BtoIrCmdTransmitter.r_parser.parse_args()
-        return_code = BtoIrCmdTransmitter._exec_cmd('{}_{}'.format(args.mode, args.degree))
-        return {'success': True if return_code == 0 else False}
+        result = BtoIrCmdTransmitter._exec_cmd('{}_{}'.format(args.mode, args.degree))
+        return {'success': result}
 
     @staticmethod
     def _exec_cmd(cmd_name: str) -> int:
         cmd = Command.query.filter_by(name=cmd_name).first()
         if cmd:
-            return os.system('{} -e -t {}'.format(CMD_FILE, cmd))
+            try:
+                subprocess.run(['sudo', CMD_FILE, '-e', '-t', cmd])
+                return True
+            except:
+                return False
         else:
-            return 99
+            return False
 
 
 class BtoIrCmdReceiver(Resource):
@@ -80,12 +84,11 @@ class BtoIrCmdReceiver(Resource):
         args = BtoIrCmdReceiver.r_parser.parse_args()
 
         try:
-            cp = subprocess.check_call([CMD_FILE, '-e', '-r'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+            sp = subprocess.run(['sudo', CMD_FILE, '-e', '-r'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         except subprocess.SubprocessError:
             return {'success': False}
 
-        _, _, result = cp.stdout.split()
-        cmd = result.strip().split()
+        cmd = sp.stdout.decode().split()[7]
         BtoIrCmdReceiver._append_cmd('{}_{}'.format(args.mode, args.degree), cmd)
         return {'success': True}
 
