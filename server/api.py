@@ -8,8 +8,8 @@ import csv
 import os
 import subprocess
 
-from flask import Flask
-from flask_restful import Resource, Api
+from flask import Flask, request
+from flask_restful import Resource, Api, reqparse
 from flask_sqlalchemy import SQLAlchemy
 import begin
 
@@ -46,19 +46,18 @@ class BtoIrCmdAdmin(Resource):
         return [command.name for command in Command.query.all()]
 
 
-class BtoIrCmd(Resource):
+class BtoIrCmdTransmitter(Resource):
     """
-    赤外線リモコン操作APIクラス
+    赤外線リモコン信号送信クラス
     """
+    r_parser = reqparse.RequestParser()
+    r_parser.add_argument('mode', required=True)
+    r_parser.add_argument('degree', type=int, required=True)
 
-    def get(self, cmd_name: str):
-        return_code = BtoIrCmd._exec_cmd(cmd_name)
-        if return_code == 0:
-            is_success = True
-        else:
-            is_success = False
-
-        return {'success': is_success}
+    def post(self):
+        args = BtoIrCmdTransmitter.r_parser.parse_args()
+        return_code = BtoIrCmdTransmitter._exec_cmd('{}_{}'.format(args.mode, args.degree))
+        return {'success': True if return_code == 0 else False}
 
     @staticmethod
     def _exec_cmd(cmd_name: str) -> int:
@@ -68,7 +67,18 @@ class BtoIrCmd(Resource):
         else:
             return 99
 
-    def post(self, cmd_name: str):
+
+class BtoIrCmdReceiver(Resource):
+    """
+    赤外線リモコン信号受信クラス
+    """
+    r_parser = reqparse.RequestParser()
+    r_parser.add_argument('mode', required=True)
+    r_parser.add_argument('degree', type=int, required=True)
+
+    def post(self):
+        args = BtoIrCmdReceiver.r_parser.parse_args()
+
         try:
             cp = subprocess.check_call([CMD_FILE, '-e', '-r'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         except subprocess.SubprocessError:
@@ -76,7 +86,7 @@ class BtoIrCmd(Resource):
 
         _, _, result = cp.stdout.split()
         cmd = result.strip().split()
-        BtoIrCmd._append_cmd(cmd_name, cmd)
+        BtoIrCmdReceiver._append_cmd('{}_{}'.format(args.mode, args.degree), cmd)
         return {'success': True}
 
     @staticmethod
@@ -87,7 +97,8 @@ class BtoIrCmd(Resource):
 
 api = Api(app)
 api.add_resource(BtoIrCmdAdmin, '/bto_ir_cmd')
-api.add_resource(BtoIrCmd, '/bto_ir_cmd/<string:cmd_name>')
+api.add_resource(BtoIrCmdTransmitter, '/bto_ir_cmd/transmit')
+api.add_resource(BtoIrCmdReceiver, '/bto_ir_cmd/receive')
 
 
 @begin.start
