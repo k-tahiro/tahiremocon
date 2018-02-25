@@ -34,6 +34,9 @@ class Command(db.Model):
         return '<Command %r>' % self.name
 
 
+db.create_all()
+
+
 class BtoIrCmdAdmin(Resource):
     """
     赤外線リモコン操作API管理クラス
