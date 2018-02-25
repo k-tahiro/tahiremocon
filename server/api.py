@@ -13,10 +13,10 @@ from flask_restful import Resource, Api
 from flask_sqlalchemy import SQLAlchemy
 import begin
 
-DB_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'command.db')
+DB_FILE = '/var/opt/tahiremocon/command.db'
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{DB_FILE}'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///{}'.format(DB_FILE)
 db = SQLAlchemy(app)
 
 
