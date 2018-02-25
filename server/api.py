@@ -13,6 +13,7 @@ from flask_restful import Resource, Api
 from flask_sqlalchemy import SQLAlchemy
 import begin
 
+CMD_FILE = '/usr/local/bin/bto_ir_cmd'
 DB_FILE = '/var/opt/tahiremocon/command.db'
 
 app = Flask(__name__)
