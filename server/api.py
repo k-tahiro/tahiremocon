@@ -70,7 +70,7 @@ class BtoIrCmd(Resource):
 
     def post(self, cmd_name: str):
         try:
-            cp = subprocess.run([CMD_FILE, '-e', '-r'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+            cp = subprocess.check_call([CMD_FILE, '-e', '-r'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         except subprocess.SubprocessError:
             return {'success': False}
 
