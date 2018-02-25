@@ -5,7 +5,7 @@ function request2Api(resource) {
     headers: new Headers({
       'Content-Type': 'application/json'
     }),
-    body: new Blob({
+    body: JSON.stringify({
       'mode': a[0],
       'degree': Number(a[1])
     })
