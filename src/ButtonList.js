@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import loadCmd from './loadCmd'
+import loadCmd from './lib/loadCmd'
 import Button from './Button';
 
 class ButtonList extends Component {

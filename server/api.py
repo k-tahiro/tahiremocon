@@ -17,7 +17,7 @@ CMD_FILE = '/usr/local/bin/bto_ir_cmd'
 DB_FILE = '/var/opt/tahiremocon/command.db'
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///{}'.format(DB_FILE)
+app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{DB_FILE}'
 db = SQLAlchemy(app)
 
 
@@ -46,17 +46,26 @@ class BtoIrCmdAdmin(Resource):
         return [command.name for command in Command.query.all()]
 
 
-class BtoIrCmdTransmitter(Resource):
+class BtoIrCmdBase(Resource):
+    parser = reqparse.RequestParser()
+    parser.add_argument('mode', required=True)
+    parser.add_argument('degree', type=int, required=True)
+
+    @staticmethod
+    def _get_cmd_name():
+        args = BtoIrCmdBase.parser.parse_args()
+        return f'{args.mode}_{args.degree}'
+
+
+class BtoIrCmdTransmitter(BtoIrCmdBase):
     """
     赤外線リモコン信号送信クラス
     """
-    r_parser = reqparse.RequestParser()
-    r_parser.add_argument('mode', required=True)
-    r_parser.add_argument('degree', type=int, required=True)
 
     def post(self):
-        args = BtoIrCmdTransmitter.r_parser.parse_args()
-        result = BtoIrCmdTransmitter._exec_cmd('{}_{}'.format(args.mode, args.degree))
+        cmd_name = self._get_cmd_name()
+        print(f'Transmit command: {cmd_name}')
+        result = BtoIrCmdTransmitter._exec_cmd(cmd_name)
         return {'success': result}
 
     @staticmethod
@@ -72,16 +81,13 @@ class BtoIrCmdTransmitter(Resource):
             return False
 
 
-class BtoIrCmdReceiver(Resource):
+class BtoIrCmdReceiver(BtoIrCmdBase):
     """
     赤外線リモコン信号受信クラス
     """
-    r_parser = reqparse.RequestParser()
-    r_parser.add_argument('mode', required=True)
-    r_parser.add_argument('degree', type=int, required=True)
-
     def post(self):
-        args = BtoIrCmdReceiver.r_parser.parse_args()
+        cmd_name = self._get_cmd_name()
+        print(f'Recieve command: {cmd_name}')
 
         try:
             sp = subprocess.run(['sudo', CMD_FILE, '-e', '-r'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
@@ -89,7 +95,7 @@ class BtoIrCmdReceiver(Resource):
             return {'success': False}
 
         cmd = sp.stdout.decode().split()[7]
-        BtoIrCmdReceiver._append_cmd('{}_{}'.format(args.mode, args.degree), cmd)
+        BtoIrCmdReceiver._append_cmd(cmd_name, cmd)
         return {'success': True}
 
     @staticmethod

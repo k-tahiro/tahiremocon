@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import RemoconStatus from './RemoconStatus';
 import ButtonList from './ButtonList';
-import request2Api from './request2Api'
+import request2Api from './lib/request2Api'
 
 class AppBody extends Component {
   constructor(props) {
