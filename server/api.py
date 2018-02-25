@@ -64,7 +64,7 @@ class BtoIrCmdTransmitter(Resource):
         cmd = Command.query.filter_by(name=cmd_name).first()
         if cmd:
             try:
-                subprocess.run(['sudo', CMD_FILE, '-e', '-t', cmd])
+                subprocess.run(['sudo', CMD_FILE, '-e', '-t', cmd.signal])
                 return True
             except:
                 return False
