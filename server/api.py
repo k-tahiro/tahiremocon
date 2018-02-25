@@ -4,8 +4,6 @@
 BTO IR Server Api with Flask-RESTful
 """
 
-import csv
-import os
 import subprocess
 
 from flask import Flask, request
