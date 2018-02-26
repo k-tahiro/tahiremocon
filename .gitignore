@@ -12,3 +12,6 @@ npm-debug.log
 
 # VSC
 .vscode
+
+# pyenv
+.python-version
