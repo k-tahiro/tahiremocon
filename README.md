@@ -1,10 +1,10 @@
 # tahiremocon
 
-Infrared Remote Controller for Raspberry Pi with bto_ir_cmd
+Infrared Remote Controller for Raspberry Pi with Bit Trade One IR Remocon
 
 ## Description
 
-tahiremocon is web application for Raspberry Pi with bto_ir_cmd.  
+tahiremocon is web application for Raspberry Pi with Bit Trade One IR Remocon.  
 It assumes that SERVER runs on Raspberry Pi and CONSOLE runs on other X86 machine.  
 And also provides CONSOLE docker image.
 
