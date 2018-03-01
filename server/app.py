@@ -8,7 +8,7 @@ import begin
 
 from flask import Flask
 
-from app import api, db
+from resource import api, db
 
 DB_FILE = '/var/opt/tahiremocon/command.db'
 
