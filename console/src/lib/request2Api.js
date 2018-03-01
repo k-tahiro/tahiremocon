@@ -1,5 +1,5 @@
-function request2Api(resource) {
-  const a = resource.split('_')
+function request2Api(label) {
+  const a = label.split('_')
   const request = new Request('/bto_ir_cmd/transmit', {
     method: 'POST',
     headers: new Headers({
