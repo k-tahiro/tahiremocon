@@ -1,10 +1,27 @@
 import subprocess
 
 from flask_restful import Api, Resource, reqparse
+from jsonschema import validate
 
 from database import db, Command
 
 CMD_FILE = '/usr/local/bin/bto_ir_cmd'
+JSON_SCHEMA = {
+    'title': 'Beebotte',
+    'type': 'object',
+    'properties': {
+        'action': {
+            'type': 'string'
+        },
+        'text': {
+            'type': 'string'
+        },
+        'number': {
+            'type': 'integer'
+        }
+    },
+    'required': ['action', 'text']
+}
 
 
 # 管理API
@@ -24,7 +41,11 @@ class BtoIrCmdBase(Resource):
     @staticmethod
     def _get_cmd_name():
         args = BtoIrCmdBase.parser.parse_args()
-        return "暖房_24"
+        validate(args.data, JSON_SCHEMA)
+        if args.data['action'] == 'set':
+            return f'{args.data['text']}_{args.data['number']}'
+        else:
+            return args.data['text']
 
 
 # 送信API
