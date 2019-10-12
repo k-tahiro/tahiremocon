@@ -22,7 +22,7 @@ class BtoIrCmd:
 
 
 class CameraCmd:
-    def __init__(self, cmd: str = '/usr/local/bin/camera.sh'):
+    def __init__(self, cmd: str = os.path.join(os.path.dirname(__file__), '../bin/camera.sh')):
         self._args = [cmd] if os.getuid() == 0 else ['sudo', cmd]
 
     def run(self) -> str:
