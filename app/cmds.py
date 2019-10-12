@@ -11,14 +11,14 @@ class BtoIrCmd:
     def receive(self) -> str:
         result = subprocess.run(self._receive_args, capture_output=True)
         if result.returncode:
-            raise RuntimeError(result.stderr)
+            raise RuntimeError(result.stderr.decode())
         return result.stdout.decode().split()[-1]
 
     def transmit(self, code: str):
         args = self._transmit_args + [code]
         result = subprocess.run(args, capture_output=True)
         if result.returncode:
-            raise RuntimeError(result.stderr)
+            raise RuntimeError(result.stderr.decode())
 
 
 class CameraCmd:
@@ -28,7 +28,7 @@ class CameraCmd:
     def run(self) -> str:
         result = subprocess.run(self._args, capture_output=True)
         if result.returncode:
-            raise RuntimeError(result.stderr)
+            raise RuntimeError(result.stderr.decode())
         return result.stdout.decode()
 
 
