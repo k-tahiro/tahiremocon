@@ -56,3 +56,11 @@ def transmit_code(code_key: str, db: Session = Depends(get_db)):
     file_path = app.extra['camera_cmd'].run()
     label, _ = app.extra['predictor'].predict(file_path)
     return label
+
+
+@app.delete('/codes/{code_key}')
+def delete_code(code_key: str, db: Session = Depends(get_db)):
+    db_code = crud.get_code_by_key(db, key=code_key)
+    if db_code is None:
+        raise HTTPException(status_code=404, detail="Code not found")
+    return crud.delete_code(db=db, key=code_key)
