@@ -19,17 +19,17 @@ readonly ERR_LOG_FILE="${LOG_DIR}/err.log"
 
 while :
 do
-  FILENAME=$(adb shell find ${CAMERA_DIR} -type f -newer ${CAMERA_DIR}/newer | grep jpg)
-  if [ "${FILENAME}" != "" ]; then
-    if [ $(echo "${FILENAME}" | wc -l) -eq 1 ]; then
-      adb pull "${FILENAME}" "${DATA_DIR}" >>"${ADB_LOG_FILE}" 2>&1
-      adb shell rm -f "${FILENAME}" >>"${ADB_LOG_FILE}" 2>&1
+  FILE=$(adb shell find ${CAMERA_DIR} -type f -newer ${CAMERA_DIR}/newer | grep jpg)
+  if [ "${FILE}" != "" ]; then
+    if [ $(echo "${FILE}" | wc -l) -eq 1 ]; then
+      adb pull "${FILE}" "${DATA_DIR}" >>"${ADB_LOG_FILE}" 2>&1
+      adb shell rm -f "${FILE}" >>"${ADB_LOG_FILE}" 2>&1
       break
     else
       {
         echo "Unexpected state!!"
         echo "There are too many files."
-        echo "${FILENAME}"
+        echo "${FILE}"
       } | tee -a "${ERR_LOG_FILE}" 1>&2
       exit 1
     fi
@@ -38,4 +38,6 @@ do
 done
 adb shell rm -f "${CAMERA_DIR}/newer" >>"${ADB_LOG_FILE}" 2>&1
 
-basename "${FILENAME}" | tr -d '\n'
+FILENAME="$(basename ${FILE})"
+FILE="${DATA_DIR}/${FILENAME}"
+echo -n "${FILE}"
