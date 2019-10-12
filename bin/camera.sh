@@ -1,15 +1,14 @@
 #!/bin/bash
 
 readonly CAMERA_APP="com.huawei.camera/com.huawei.camera"
-readonly DATA_DIR="/sdcard/DCIM/Camera"
-readonly LOG_DIR="/var/log/tahiremovision"
+readonly CAMERA_DIR="/sdcard/DCIM/Camera"
+readonly DATA_DIR="$(cd $(dirname $0) && pwd)/../data"
+readonly LOG_DIR="$(cd $(dirname $0) && pwd)/../log"
 readonly ADB_LOG_FILE="${LOG_DIR}/adb.log"
 readonly ERR_LOG_FILE="${LOG_DIR}/err.log"
 
-IMG_DIR="${1:-"/var/opt/tahiremovision"}"
-
 {
-  adb shell touch "${DATA_DIR}/newer"
+  adb shell touch "${CAMERA_DIR}/newer"
   adb shell input keyevent 82 # unlock
   adb shell am start -n "${CAMERA_APP}" # start camera app
   adb shell input keyevent 80 # forcus
@@ -20,10 +19,10 @@ IMG_DIR="${1:-"/var/opt/tahiremovision"}"
 
 while :
 do
-  FILENAME=$(adb shell find ${DATA_DIR} -type f -newer ${DATA_DIR}/newer | grep jpg)
+  FILENAME=$(adb shell find ${CAMERA_DIR} -type f -newer ${CAMERA_DIR}/newer | grep jpg)
   if [ "${FILENAME}" != "" ]; then
     if [ $(echo "${FILENAME}" | wc -l) -eq 1 ]; then
-      adb pull "${FILENAME}" "${IMG_DIR}" >>"${ADB_LOG_FILE}" 2>&1
+      adb pull "${FILENAME}" "${DATA_DIR}" >>"${ADB_LOG_FILE}" 2>&1
       adb shell rm -f "${FILENAME}" >>"${ADB_LOG_FILE}" 2>&1
       break
     else
@@ -37,6 +36,6 @@ do
   fi
   sleep 1
 done
-adb shell rm -f "${DATA_DIR}/newer" >>"${ADB_LOG_FILE}" 2>&1
+adb shell rm -f "${CAMERA_DIR}/newer" >>"${ADB_LOG_FILE}" 2>&1
 
 basename "${FILENAME}" | tr -d '\n'
