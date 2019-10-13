@@ -45,4 +45,4 @@ class Predictor:
         probs = nn.Softmax()(outputs)
         _, preds = torch.max(probs, 1)
 
-        return preds.numpy()[0], probs.tolist()
+        return preds.tolist()[0], probs.tolist()
