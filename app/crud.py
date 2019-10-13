@@ -28,5 +28,4 @@ def delete_code(db: Session, key: str):
     db_code = get_code_by_key(db, key)
     db.delete(db_code)
     db.commit()
-    db.refresh(db_code)
     return db_code
