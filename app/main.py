@@ -30,6 +30,11 @@ def receive_code():
     return app.extra['bto_ir_cmd'].receive()
 
 
+@app.post('/codes/transmit/{code}')
+def transmit_code(code: str):
+    return app.extra['bto_ir_cmd'].transmit(code)
+
+
 @app.post("/codes/", response_model=schemas.Code)
 def create_code(code: schemas.CodeCreate, db: Session = Depends(get_db)):
     db_code = crud.get_code_by_key(db, key=code.code_key)
@@ -48,7 +53,7 @@ def read_codes(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
 
 
 @app.post('/codes/{code_key}')
-def transmit_code(code_key: str, db: Session = Depends(get_db)):
+def run(code_key: str, db: Session = Depends(get_db)):
     db_code = crud.get_code_by_key(db, key=code_key)
     if db_code is None:
         raise HTTPException(status_code=404, detail="Code not found")
