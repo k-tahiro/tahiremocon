@@ -2,10 +2,11 @@
 
 readonly CAMERA_APP="com.huawei.camera/com.huawei.camera"
 readonly CAMERA_DIR="/sdcard/DCIM/Camera"
-readonly DATA_DIR="$(cd $(dirname $0) && pwd)/../data"
-readonly LOG_DIR="$(cd $(dirname $0) && pwd)/../log"
-readonly ADB_LOG_FILE="${LOG_DIR}/adb.log"
-readonly ERR_LOG_FILE="${LOG_DIR}/err.log"
+
+: "${DATA_DIR:="$(cd $(dirname $0) && pwd)/../data"}"
+: "${LOG_DIR:="$(cd $(dirname $0) && pwd)/../log"}"
+ADB_LOG_FILE="${LOG_DIR}/adb.log"
+ERR_LOG_FILE="${LOG_DIR}/err.log"
 
 {
   adb shell touch "${CAMERA_DIR}/newer"
