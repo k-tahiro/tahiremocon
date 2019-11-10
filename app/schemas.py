@@ -2,8 +2,8 @@ from pydantic import BaseModel
 
 
 class CodeBase(BaseModel):
-    code_key: str
-    code_str: str = None
+    key: str
+    code: str = None
 
 
 class CodeCreate(CodeBase):
@@ -11,7 +11,11 @@ class CodeCreate(CodeBase):
 
 
 class Code(CodeBase):
-    code_id: int
+    id: int
 
     class Config:
         orm_mode = True
+
+
+class TransmitResponse(BaseModel):
+    on: bool

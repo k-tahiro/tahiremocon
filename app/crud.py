@@ -4,12 +4,12 @@ from . import models, schemas
 from .cmds import BtoIrCmd
 
 
-def get_code(db: Session, code_id: int):
-    return db.query(models.Code).filter(models.Code.code_id == code_id).first()
+def get_code(db: Session, id_: int):
+    return db.query(models.Code).filter(models.Code.id == id_).first()
 
 
 def get_code_by_key(db: Session, key: str):
-    return db.query(models.Code).filter(models.Code.code_key == key).first()
+    return db.query(models.Code).filter(models.Code.key == key).first()
 
 
 def get_codes(db: Session, skip: int = 0, limit: int = 100):
