@@ -44,7 +44,7 @@ def read_codes(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     return codes
 
 
-@app.post('/codes/{key}/transmit', response_model=schemas.TransmitResponse)
+@app.post('/codes/transmit/{key}', response_model=schemas.TransmitResponse)
 def transmit_code(key: str, db: Session = Depends(get_db)):
     db_code = crud.get_code_by_key(db, key=key)
     if db_code is None:
