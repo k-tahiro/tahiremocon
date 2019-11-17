@@ -18,4 +18,5 @@ class Code(CodeBase):
 
 
 class TransmitResponse(BaseModel):
-    on: bool
+    success: bool
+    label: int = -1

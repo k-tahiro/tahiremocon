@@ -52,7 +52,10 @@ def transmit_code(key: str, db: Session = Depends(get_db)):
     app.extra['bto_ir_cmd'].transmit(db_code.code)
     file_path = app.extra['camera_cmd'].run()
     label, _ = app.extra['predictor'].predict(file_path)
-    return {'on': bool(label)}
+    return {
+        'success': True,
+        'label': label
+    }
 
 
 @app.delete('/codes/{key}', response_model=schemas.Code)
